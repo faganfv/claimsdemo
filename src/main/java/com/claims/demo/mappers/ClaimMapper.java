@@ -3,6 +3,7 @@ package com.claims.demo.mappers;
 import com.claims.demo.controllers.ClaimCreatedRequest;
 import com.claims.demo.domain.Claim;
 import com.claims.demo.events.ClaimCreatedEvent;
+import com.claims.demo.events.EventClaim;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -21,6 +22,14 @@ public class ClaimMapper {
         if (req == null) return null;
         String claimId = "CLM-" + UUID.randomUUID().toString().substring(0, 8);
 
+        String sourceChannel = req.source() != null ? req.source().channel() : null;
+        String sourceReportedBy = req.source() != null ? req.source().reportedBy() : null;
+        String actorType = req.actor() != null ? req.actor().actorType() : null;
+        String actorId = req.actor() != null ? req.actor().actorId() : null;
+        String correlationRequestId = req.correlation() != null ? req.correlation().requestId() : null;
+        String correlationTraceId = req.correlation() != null ? req.correlation().traceId() : null;
+        Instant metadataCreatedAt = req.metadata() != null ? req.metadata().createdAt() : null;
+
         return new Claim(
                 claimId,
                 req.policyId(),
@@ -31,28 +40,33 @@ public class ClaimMapper {
                 req.county(),
                 req.zipCode(),
                 req.description(),
-                req.source().channel(),
-                req.source().reportedBy(),
-                req.actor().actorType(),
-                req.actor().actorId(),
-                req.correlation().requestId(),
-                req.correlation().traceId()
+                sourceChannel,
+                sourceReportedBy,
+                actorType,
+                actorId,
+                correlationRequestId,
+                correlationTraceId,
+                metadataCreatedAt
         );
     }
 
-    public ClaimCreatedEvent toEvent(Claim claim) {
+    public ClaimCreatedEvent toEvent(Claim claim, ClaimCreatedRequest req) {
         if (claim == null) return null;
 
-        String eventId = "evt-" + UUID.randomUUID().toString().substring(0, 8);
-        ClaimCreatedEvent.Metadata metadata = new ClaimCreatedEvent.Metadata(
-                CLAIM_CREATED_EVENT_SCHEMA,
-                Instant.now());
+        EventClaim eventClaim = new EventClaim(
+                claim.getId(),
+                claim.getPolicyNumber(),
+                claim.getLossType(),
+                claim.getDateOfLoss(),
+                claim.getReportedAtDate(),
+                claim.getState()
+        );
 
         return new ClaimCreatedEvent(
-                eventId,
+                "evt-" + UUID.randomUUID().toString().substring(0, 8),
                 CLAIM_CREATED_EVENT_TYPE,
                 CLAIM_CREATED_EVENT_VERSION,
-                claim,
+                eventClaim,
                 new ClaimCreatedEvent.Location(
                         claim.getState(),
                         claim.getCounty(),
@@ -60,8 +74,8 @@ public class ClaimMapper {
                 ),
                 new ClaimCreatedEvent.Source(claim.getSourceChannel(), claim.getSourceReportedBy()),
                 new ClaimCreatedEvent.Actor(claim.getActorType(), claim.getActorId()),
-                new ClaimCreatedEvent.Correlation(claim.getCorrelationRequestId(), claim.getCorrelationTraceId()),
-                metadata
+                new ClaimCreatedEvent.Correlation(req.correlation().requestId(), req.correlation().traceId()),
+                new ClaimCreatedEvent.Metadata(CLAIM_CREATED_EVENT_SCHEMA, Instant.now())
         );
     }
 }
