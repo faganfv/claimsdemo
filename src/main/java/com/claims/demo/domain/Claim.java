@@ -19,10 +19,11 @@ public class Claim {
     private String actorId;
     private String correlationRequestId;
     private String correlationTraceId;
+    private Instant metadataCreatedAt;
 
     public Claim(String claimId, String policyNumber, String lossType, Instant dateOfLoss, Instant reportedAtDate, String state, String county, String zipCode, String description,
                  String sourceChannel, String sourceReportedBy, String actorType, String actorId,
-                 String correlationRequestId, String correlationTraceId) {
+                 String correlationRequestId, String correlationTraceId, Instant metadataCreatedAt) {
         this.id = claimId;
         this.policyNumber = policyNumber;
         this.lossType = lossType;
@@ -38,7 +39,10 @@ public class Claim {
         this.actorId = actorId;
         this.correlationRequestId = correlationRequestId;
         this.correlationTraceId = correlationTraceId;
+        this.metadataCreatedAt = metadataCreatedAt;
     }
+
+    public Claim() { }
 
     public String getId() {
         return id;
@@ -158,5 +162,13 @@ public class Claim {
 
     public void setCorrelationTraceId(String correlationTraceId) {
         this.correlationTraceId = correlationTraceId;
+    }
+
+    public Instant getMetadataCreatedAt() {
+        return metadataCreatedAt;
+    }
+
+    public void setMetadataCreatedAt(Instant metadataCreatedAt) {
+        this.metadataCreatedAt = metadataCreatedAt;
     }
 }

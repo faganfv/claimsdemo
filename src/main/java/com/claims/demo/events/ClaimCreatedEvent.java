@@ -1,14 +1,12 @@
 package com.claims.demo.events;
 
-import com.claims.demo.domain.Claim;
-
 import java.time.Instant;
 
 public record ClaimCreatedEvent(
         String eventId,
         String eventType,
         String eventVersion,
-        Claim claim,
+        EventClaim claim,
         Location location,
         Source source,
         Actor actor,
