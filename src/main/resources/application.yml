@@ -2,36 +2,8 @@ spring:
   application:
     name: claims-demo
 
-  activemq:
-    broker-url: "ssl://b-be37f18c-2e84-4056-b8c6-98dc2864c531-1.mq.us-east-1.amazonaws.com:61617"
-    user: ${MQ_USERNAME}
-    password: ${MQ_PASSWORD}
-    packages:
-      trust-all: true
-
-  config:
-    import: aws-secretsmanager:dev/ClaimsDemo/ActiveMQ
-
-  jms.pub-sub-domain: true
+  profiles:
+    default: local
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog.yml
-
----
-spring:
-  config.activate.on-profile: local
-
-  datasource:
-    url: jdbc:tc:postgresql:15-alpine:///testdb
-    username: test
-    password: test
-
----
-spring:
-  config.activate.on-profile: deployed
-
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${host}:${port}/${dbInstanceIdentifier}
-    username: ${username}
-    password: ${password}
