@@ -1,8 +1,9 @@
 spring:
   config:
     activate.on-profile: deployed
-    import: aws-secretsmanager:dev/ClaimsDemo/ActiveMQ
-
+    import:
+      - "aws-secretsmanager:dev/ClaimsDemo/ActiveMQ"
+      - "aws-secretsmanager:dev/ClaimsDemo/Postgres"
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${host}:${port}/${dbInstanceIdentifier}
