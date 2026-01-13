@@ -7,3 +7,8 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog.yml
+
+aws:
+  s3:
+    region: us-east-2
+    bucket: claims-s3-demo-bucket
