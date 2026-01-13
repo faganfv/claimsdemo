@@ -2,10 +2,13 @@ package com.claims.demo.controllers;
 
 import com.claims.demo.domain.Claim;
 import com.claims.demo.ClaimsService;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -24,9 +27,15 @@ public class ClaimsDemoController {
     @GetMapping("/getClaims")
     public List<Claim> getClaims() { return claimsService.getClaims(); }
 
-    @PostMapping("/createClaim")
-    public String createClaim(@RequestBody ClaimCreatedRequest claimRequest) {
-        Boolean created = claimsService.createClaim(claimRequest);
-        return created ? "Claim created successfully!" : "Failed to create claim.";
+    @PostMapping(
+        value = "/createClaim",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<String> createClaim(
+            @RequestPart("requestJson") ClaimCreatedRequest claimRequest,
+            @RequestPart("image") FilePart image) {
+        return claimsService.createClaim(claimRequest, image)
+                .map(created -> created
+                        ? "Claim created successfully!"
+                        : "Failed to create claim.");
     }
 }
