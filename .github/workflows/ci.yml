@@ -51,7 +51,7 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITOPS_REPO_TOKEN }}@github.com/faganfv/claimsdemo-gitops.git
           cd claimsdemo-gitops/apps/claimsdemo
 
-          export IMAGE_TAG
+          export IMAGE_FULL="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           envsubst < deployment.yaml > deployment.yaml.tmp
           mv deployment.yaml.tmp deployment.yaml
 
