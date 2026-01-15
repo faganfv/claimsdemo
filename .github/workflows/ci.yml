@@ -51,7 +51,9 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITOPS_REPO_TOKEN }}@github.com/faganfv/claimsdemo-gitops.git
           cd claimsdemo-gitops/apps/claimsdemo
 
-          sed -i "s|image: .*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" deployment.yaml
+          export IMAGE_TAG
+          envsubst < deployment.yaml > deployment.yaml.tmp
+          mv deployment.yaml.tmp deployment.yaml
 
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
