@@ -2,8 +2,11 @@ name: CI – Build & Publish
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main      # run full CI + push on main
   pull_request:
+    branches:
+      - main      # run tests for PRs targeting main
 
 jobs:
   build-test-push:
@@ -33,6 +36,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push image
+        if: github.ref == 'refs/heads/main'       # <--- only runs after merge
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -42,6 +46,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Update GitOps repo
+        if: github.ref == 'refs/heads/main'
         run: |
           git clone https://x-access-token:${{ secrets.GITOPS_REPO_TOKEN }}@github.com/faganfv/claimsdemo-gitops.git
           cd claims-gitops/apps/claimsdemo
