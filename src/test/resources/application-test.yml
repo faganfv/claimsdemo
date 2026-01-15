@@ -1,2 +1,6 @@
 spring:
   config.activate.on-profile: test
+
+aws:
+  secrets:
+    enabled: false
