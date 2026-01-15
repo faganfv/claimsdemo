@@ -36,7 +36,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push image
-        if: github.ref == 'refs/heads/main'       # <--- only runs after merge
+        if: github.ref == 'refs/heads/main'
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -51,11 +51,10 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITOPS_REPO_TOKEN }}@github.com/faganfv/claimsdemo-gitops.git
           cd claimsdemo-gitops/apps/claimsdemo
 
-          export IMAGE_FULL="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          envsubst < deployment.yaml > deployment.yaml.tmp
-          mv deployment.yaml.tmp deployment.yaml
+          kustomize edit set image my-old-image-placeholder=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git commit -am "Deploy claimsdemo ${{ github.sha }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kustomization.yaml
+          git commit -am "chore: update image to ${{ github.sha }}"
           git push
