@@ -1,26 +1,26 @@
-FROM eclipse-temurin:21-jdk AS build
+FROM eclipse-temurin:21-jre AS build
 
-WORKDIR /app
-
-COPY pom.xml .
+# Copy project files
 COPY mvnw .
 COPY .mvn .mvn
+COPY pom.xml .
+COPY src ./src
 
+# Make Maven Wrapper executable
+RUN chmod +x mvnw
+
+# Download dependencies offline
 RUN ./mvnw -B -q dependency:go-offline
 
-COPY src src
+# Package the app
+RUN ./mvnw -B -q package -DskipTests
 
-RUN ./mvnw -B -q clean package -DskipTests
-
+# Final image
 FROM eclipse-temurin:21-jre
-
 WORKDIR /app
 
-RUN useradd -r -u 1001 spring
-USER spring
-
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build target/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
