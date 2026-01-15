@@ -49,7 +49,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           git clone https://x-access-token:${{ secrets.GITOPS_REPO_TOKEN }}@github.com/faganfv/claimsdemo-gitops.git
-          cd claims-gitops/apps/claimsdemo
+          cd claimsdemo-gitops/apps/claimsdemo
 
           sed -i "s|image: .*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" deployment.yaml
 
